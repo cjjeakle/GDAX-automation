@@ -1,13 +1,12 @@
 /**
- * Parameters
+ * Configuration
  */
-const isProd = true;
-const actuallyBuy = false; 
-
-const symbolsToBuy = [ 'BTC', 'ETH', 'LTC', 'BCH' ];
-const amountToSpendUsd = 20;
-
-const placeLimitOrderToAvoidFees = true;
+const config = require('./config');
+const isProd = config.isProd;
+const actuallyBuy = config.actuallyBuy; 
+const symbolsToBuy = config.symbolsToBuy;
+const amountToSpendUsd = config.amountToSpendUsd;
+const placeLimitOrdersToAvoidFees = config.placeLimitOrdersToAvoidFees;
 
 /**
  * Settings
@@ -110,7 +109,7 @@ loadingFinished.then(() => {
     relativePurchaseWeights.forEach(purchaseWeight => {
         let productId = purchaseWeight.symbol + '-USD';
         let amountUsd = purchaseWeight.relativeWeight * amountToSpendUsd;
-        if (placeLimitOrderToAvoidFees) {
+        if (placeLimitOrdersToAvoidFees) {
             placeOrderAtCurrentBid(productId, amountUsd);
         } else {
             buyAtMarketPrice(productId, amountUsd);
