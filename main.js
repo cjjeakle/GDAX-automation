@@ -122,7 +122,7 @@ function placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty) {
 loadingFinished.then(() => {
     symbolsToBuy.forEach(symbol => {
         let productId = symbol + '-USD';
-        let amountUsd = relativePurchaseWeights[symbol] * amountToSpendUsd;
+        let amountUsd = (relativePurchaseWeights[symbol] * amountToSpendUsd).toFixed(2);
         let minimumOrderQty = minimumOrderQtys[symbol];
         if (placeLimitOrdersToAvoidFees) {
             placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty);
