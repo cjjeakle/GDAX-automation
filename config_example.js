@@ -1,6 +1,6 @@
-exports.isProd = false;
-exports.actuallyBuy = false;
+exports.useProd = false;
+exports.actuallyExecuteTrades = false;
 exports.placeLimitOrdersToAvoidFees = false;
 exports.roundUpToMinimumOrderSizeForLimitOrders = false;
-exports.symbolsToBuy = [ 'BTC', 'ETH', 'LTC', 'BCH' ];
-exports.amountToSpendUsd = 0;
+exports.symbolsToTrade = [ 'BTC', 'ETH', 'LTC', 'BCH' ];
+exports.transactionAmountUsd = 0;

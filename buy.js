@@ -2,12 +2,13 @@
  * Configuration
  */
 const config = require('./config');
-const isProd = config.isProd;
-const actuallyBuy = config.actuallyBuy; 
-const symbolsToBuy = config.symbolsToBuy;
-const amountToSpendUsd = config.amountToSpendUsd;
+const useProd = config.useProd;
+const actuallyExecuteTrades = config.actuallyExecuteTrades; 
+const symbolsToTrade = config.symbolsToTrade;
+const transactionAmountUsd = config.transactionAmountUsd;
 const placeLimitOrdersToAvoidFees = config.placeLimitOrdersToAvoidFees;
 const roundUpToMinimumOrderSizeForLimitOrders = config.roundUpToMinimumOrderSizeForLimitOrders;
+const quoteCurrency = 'USD';
 
 /**
  * Settings
@@ -16,7 +17,7 @@ const secrets = require('./secrets');
 const key = secrets.gdax_api_key || process.env.gdax_api_key;
 const secret = secrets.gdax_api_secret || process.env.gdax_api_secret;
 const password = secrets.gdax_api_password || process.env.gdax_api_password;
-const apiURI = isProd ? 'https://api.gdax.com' : 'https://api-public.sandbox.gdax.com';
+const apiURI = useProd ? 'https://api.gdax.com' : 'https://api-public.sandbox.gdax.com';
 
 /**
  * Libraries
@@ -32,7 +33,7 @@ let marketCapDataReady = fetch('https://api.coinmarketcap.com/v1/ticker/?limit=2
     return response.json();
 }).then(marketCapData => {
     let relevantMarketCapData = marketCapData.filter(marketCapDatum => { 
-        return symbolsToBuy.includes(marketCapDatum.symbol); 
+        return symbolsToTrade.includes(marketCapDatum.symbol); 
     });
     return relevantMarketCapData;
 });
@@ -51,7 +52,7 @@ let relativePurchaseWeightsReady = marketCapDataReady.then(marketCapData => {
 let minimumOrderQtys = Object.create(null);
 let productMetadataReady = gdaxClient.getProducts().then(products => {
 	products.filter(product => {
-		return symbolsToBuy.includes(product.base_currency);
+		return symbolsToTrade.includes(product.base_currency) && product.quote_currency === quoteCurrency;
 	}).forEach(product => {
 		minimumOrderQtys[product.base_currency] = product.base_min_size;
 	});
@@ -71,7 +72,7 @@ function buyAtMarketPrice(productId, amountUsd) {
 
     console.log(orderParams);
 
-    if (actuallyBuy)
+    if (actuallyExecuteTrades)
     {
         gdaxClient.buy(orderParams).then(orderResult => {
             console.log(productId);
@@ -106,7 +107,7 @@ function placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty) {
         console.log(orderParams.size);
         console.log(orderParams.size * orderParams.price);
 
-        if (actuallyBuy)
+        if (actuallyExecuteTrades)
         {
             gdaxClient.buy(orderParams).then(orderResult => {
                 console.log(productId);
@@ -120,9 +121,9 @@ function placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty) {
  * Make the desired order.
  */
 loadingFinished.then(() => {
-    symbolsToBuy.forEach(symbol => {
-        let productId = symbol + '-USD';
-        let amountUsd = (relativePurchaseWeights[symbol] * amountToSpendUsd).toFixed(2);
+    symbolsToTrade.forEach(symbol => {
+        let productId = symbol + '-' + quoteCurrency;
+        let amountUsd = (relativePurchaseWeights[symbol] * transactionAmountUsd).toFixed(2);
         let minimumOrderQty = minimumOrderQtys[symbol];
         if (placeLimitOrdersToAvoidFees) {
             placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty);
