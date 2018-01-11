@@ -16,4 +16,6 @@ To get started:
     * The amount to spend will be split between the selected symbols, weighted by market cap.
   * `amountToSpendUsd`: The total amount of USD to spend on this buy.
   * `placeLimitOrdersToAvoidFees`: If true, a limit order will be placed at the current best bid price in the order book. If false, market order will be placed.
-    * This aims to avoid the GDAX market taker fee, but risks order rejection (if the calculated buy amount is too small) or not being executed.
+    * This aims to avoid the GDAX market taker fee, but risks not being executed.
+  * `roundUpToMinimumOrderSizeForLimitOrders`: Rounds generated limit order amounts up to be at least the minimum order amount permitted by GDAX for each product.
+    * This avoids orders being rejected for too small an amount being specified.

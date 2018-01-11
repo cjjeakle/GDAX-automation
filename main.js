@@ -7,6 +7,7 @@ const actuallyBuy = config.actuallyBuy;
 const symbolsToBuy = config.symbolsToBuy;
 const amountToSpendUsd = config.amountToSpendUsd;
 const placeLimitOrdersToAvoidFees = config.placeLimitOrdersToAvoidFees;
+const roundUpToMinimumOrderSizeForLimitOrders = config.roundUpToMinimumOrderSizeForLimitOrders;
 
 /**
  * Settings
@@ -86,7 +87,10 @@ function placeOrderAtCurrentBid(productId, amountUsd, minimumOrderQty) {
     ).then(orderBook => {
         let targetBid = orderBook.bids[0 /* first bid */][0 /* price */];
         let targetBuyQty = (amountUsd / targetBid).toFixed(8);
-        targetBuyQty = Math.max(targetBuyQty, minimumOrderQty);
+
+        if (roundUpToMinimumOrderSizeForLimitOrders) {
+        	targetBuyQty = Math.max(targetBuyQty, minimumOrderQty);
+        }
 
         const orderParams = {
           type: 'limit',
