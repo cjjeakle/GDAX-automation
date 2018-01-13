@@ -167,27 +167,22 @@ loadingFinished.then(() => {
     // Then allots the buy amount among the underweight assets, weighted by how far off from target each is.
     let afterBuyTotalValue = totalInvestedValue + transactionAmountUsd;
 
-    let totalUnderweightAmount = 0;
-    let amountsUnderweight = Object.create(null);
+    let totalBuyAmount = 0;
+    let amountsToBuy = Object.create(null);
     symbolsToTrade.forEach(symbol => {
         let targetPortion = relativeMarketCaps[symbol];
         let targetAmountAfterBuy = afterBuyTotalValue * targetPortion;
 
-        let currentPortion = accountBalances[symbol].value / totalInvestedValue;
-        let currentAmountAfterBuy = afterBuyTotalValue * currentPortion;
-
-        console.log(symbol);
-        console.log(targetAmountAfterBuy);
-        console.log(currentAmountAfterBuy);
-
-        let amountsUnderweightAfterBuy = Math.max((targetAmountAfterBuy - currentAmountAfterBuy), 0);
-        amountsUnderweight[symbol] = amountsUnderweightAfterBuy;
-        totalUnderweightAmount += amountsUnderweightAfterBuy;
+        let amountToBuy = Math.max((targetAmountAfterBuy - accountBalances[symbol].value), 0);
+        amountsToBuy[symbol] = amountToBuy;
+        totalBuyAmount += amountToBuy;
     });
+
+    console.log(amountsToBuy);
 
     let usdAmountsToBuy = Object.create(null);
     symbolsToTrade.forEach(symbol => {
-        let percentageOfUnderweightAllocation = amountsUnderweight[symbol] / totalUnderweightAmount;
+        let percentageOfUnderweightAllocation = amountsToBuy[symbol] / totalBuyAmount;
         usdAmountsToBuy[symbol] = (percentageOfUnderweightAllocation * transactionAmountUsd).toFixed(2);
     });
 
