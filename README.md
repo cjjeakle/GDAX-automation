@@ -13,12 +13,10 @@ The script is useful for doing a market cap weighted buys, and can be scheduled 
     * Note: API credentials are not shared between prod and the sandbox.
   * `actuallyExecuteTrades`: Whether to execute the generated trades, or just display debug output.
   * `symbolsToTrade`: What symbols to trade on GDAX.
-    * The transaction amount will be split between the selected symbols, weighted by market cap.
+    * The transaction amount will be split between any of the selected symbols that are underweight in your GDAX holdings (relative to the market cap of the selected symbols).
   * `transactionAmountUsd`: The total amount of USD to use on each transaction/run.
   * `placeLimitOrdersToAvoidFees`: If true, a limit order will be placed at the current best bid price for buys or the best ask price for sells. If false, market orders will be used.
     * This aims to avoid the GDAX market taker fee, but risks not being executed.
-  * `roundUpToMinimumOrderSizeForLimitOrders`: Rounds generated limit order amounts up to be at least the minimum order amount permitted by GDAX for each product.
-    * This avoids orders being rejected when too small an amount is allocated to a product.
 
 ## Performing a buy
 * run `buy.js` in node
