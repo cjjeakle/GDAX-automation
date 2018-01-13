@@ -163,16 +163,26 @@ loadingFinished.then(() => {
     console.log(relativeMarketCaps);
     console.log(accountBalances);
 
-    // Gets the amount each GDAX product is off from its target (of it's relative market cap value)
+    // Gets the amount each GDAX product is off from its target portion of the portfolio (target = market cap relative to other buys)
     // Then allots the buy amount among the underweight assets, weighted by how far off from target each is.
+    let afterBuyTotalValue = totalInvestedValue + transactionAmountUsd;
+
     let totalUnderweightAmount = 0;
     let amountsUnderweight = Object.create(null);
     symbolsToTrade.forEach(symbol => {
-        let targetPortion = totalInvestedValue * relativeMarketCaps[symbol];
-        let currentPortion = accountBalances[symbol].value;
-        let underweightAmount = Math.max((targetPortion - currentPortion), 0);
-        amountsUnderweight[symbol] = underweightAmount;
-        totalUnderweightAmount += underweightAmount;
+        let targetPortion = relativeMarketCaps[symbol];
+        let targetAmountAfterBuy = afterBuyTotalValue * targetPortion;
+
+        let currentPortion = accountBalances[symbol].value / totalInvestedValue;
+        let currentAmountAfterBuy = afterBuyTotalValue * currentPortion;
+
+        console.log(symbol);
+        console.log(targetAmountAfterBuy);
+        console.log(currentAmountAfterBuy);
+
+        let amountsUnderweightAfterBuy = Math.max((targetAmountAfterBuy - currentAmountAfterBuy), 0);
+        amountsUnderweight[symbol] = amountsUnderweightAfterBuy;
+        totalUnderweightAmount += amountsUnderweightAfterBuy;
     });
 
     let usdAmountsToBuy = Object.create(null);
