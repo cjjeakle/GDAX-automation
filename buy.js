@@ -113,7 +113,7 @@ function buyAtMarketPrice(productId, amountUsd) {
 
     console.log(orderParams);
 
-    if (actuallyExecuteTrades)
+    if (actuallyExecuteTrades && orderParams.funds > 0)
     {
         return gdaxClient.buy(orderParams).then(orderResult => {
             console.log(productId);
@@ -167,31 +167,31 @@ loadingFinished.then(() => {
     // Then allots the buy amount among the underweight assets, weighted by how far off from target each is.
     let afterBuyTotalValue = totalInvestedValue + transactionAmountUsd;
 
-    let totalBuyAmount = 0;
-    let amountsToBuy = Object.create(null);
+    let totalAmountUnderweight = 0;
+    let amountsUnderweight = Object.create(null);
     symbolsToTrade.forEach(symbol => {
         let targetPortion = relativeMarketCaps[symbol];
         let targetAmountAfterBuy = afterBuyTotalValue * targetPortion;
 
         let amountToBuy = Math.max((targetAmountAfterBuy - accountBalances[symbol].value), 0);
-        amountsToBuy[symbol] = amountToBuy;
-        totalBuyAmount += amountToBuy;
+        amountsUnderweight[symbol] = amountToBuy;
+        totalAmountUnderweight += amountToBuy;
     });
 
-    console.log(amountsToBuy);
+    console.log(amountsUnderweight);
 
-    let usdAmountsToBuy = Object.create(null);
+    let usdamountsUnderweight = Object.create(null);
     symbolsToTrade.forEach(symbol => {
-        let percentageOfUnderweightAllocation = amountsToBuy[symbol] / totalBuyAmount;
-        usdAmountsToBuy[symbol] = (percentageOfUnderweightAllocation * transactionAmountUsd).toFixed(2);
+        let percentageOfUnderweightAllocation = amountsUnderweight[symbol] / totalAmountUnderweight;
+        usdamountsUnderweight[symbol] = (percentageOfUnderweightAllocation * transactionAmountUsd).toFixed(2);
     });
 
-    console.log(usdAmountsToBuy);
+    console.log(usdamountsUnderweight);
 
     return Promise.all(
         symbolsToTrade.map(symbol => {
             let productId = convertSymbolToGdaxProductId(symbol);
-            let amountUsd = usdAmountsToBuy[symbol];
+            let amountUsd = usdamountsUnderweight[symbol];
             let minimumOrderQty = minimumOrderQtys[symbol];
             if (placeLimitOrdersToAvoidFees) {
                 return placeOrderAtCurrentPrice(productId, amountUsd, minimumOrderQty);
