@@ -19,5 +19,16 @@ The script is useful for doing a market cap weighted buys, and can be scheduled 
     * This aims to avoid the GDAX market taker fee, but risks not being executed.
 
 ## Performing a buy
-* run `buy.js` in node
+* Requires a GDAX API key with `view` and `trade` permissions 
+* run `buy.js` in nodejs
   * The configurations above will be used to generate buy orders
+* Can be scheduled using crontab (or any code scheduling tool) to perform buys for a dollar-cost-average strategy
+
+## Print current and target asset allocation
+* Requires a GDAX API key with `view` permissions
+* run `calculateCurrentAndTargetAssetAllocation.js` in nodejs
+  * This will print:
+    * The current relative market cap of the selected GDAX products.
+    * The current balance of each selected GDAX product.
+    * The balance each selected GDAX product would have, if it was allocated value according to its relative market cap.
+    * The necessary balance changes to each product (in USD) to reach that target market cap weight.
