@@ -113,16 +113,16 @@ function buyAtMarketPrice(productId, amountUsd) {
     };
 
     console.log(orderParams);
-    console.log(minMarketOrderUSD);
-    console.log(orderParams.funds);
 
     if (actuallyExecuteTrades && orderParams.funds > minMarketOrderUSD)
     {
+        console.log("Placing order.");
         return gdaxClient.buy(orderParams).then(orderResult => {
             console.log(productId);
             console.log(orderResult);
         });
     } else {
+        console.log("Order skipped.");
         return Promise.resolve();
     }
 }
@@ -143,17 +143,16 @@ function placeOrderAtCurrentPrice(productId, amountUsd, minimumOrderQty) {
         };
 
         console.log(orderParams);
-        console.log(minimumOrderQty);
-        console.log(orderParams.size);
-        console.log(orderParams.size * orderParams.price);
 
         if (actuallyExecuteTrades && targetBuyQty > minimumOrderQty)
         {
+            console.log("Placing order.");
             return gdaxClient.buy(orderParams).then(orderResult => {
                 console.log(productId);
                 console.log(orderResult);
             });
         } else {
+            console.log("Order skipped.");
             return Promise.resolve();
         }
     });
