@@ -8,6 +8,7 @@ const symbolsToTrade = config.symbolsToTrade;
 const transactionAmountUsd = config.transactionAmountUsd;
 const placeLimitOrdersToAvoidFees = config.placeLimitOrdersToAvoidFees;
 const quoteCurrency = 'USD';
+const minMarketOrderUSD = 10;
 
 /**
  * Settings
@@ -112,8 +113,10 @@ function buyAtMarketPrice(productId, amountUsd) {
     };
 
     console.log(orderParams);
+    console.log(minMarketOrderUSD);
+    console.log(orderParams.funds);
 
-    if (actuallyExecuteTrades && orderParams.funds > 0)
+    if (actuallyExecuteTrades && orderParams.funds > minMarketOrderUSD)
     {
         return gdaxClient.buy(orderParams).then(orderResult => {
             console.log(productId);
